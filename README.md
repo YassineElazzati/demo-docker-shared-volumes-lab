@@ -1,6 +1,6 @@
 # demo-docker-shared-volumes-lab
 
-## TP 2.1 : Architecture Sidecar - Partage de Volumes
+## Architecture Sidecar - Partage de Volumes
 
 Cet exercice démontre comment deux conteneurs peuvent communiquer de manière découplée via un volume partagé. Nous allons simuler un cas d'usage courant, inspiré par des architectures comme celle de Netflix, où une application principale produit des logs et un conteneur "sidecar" les collecte pour un traitement ultérieur.
 
@@ -85,7 +85,7 @@ Cette étape est cruciale pour éviter de laisser des conteneurs ou des volumes 
 
 ---
 
-## 2.2 : Volumes Nommés vs Anonymes
+## Volumes Nommés vs Anonymes
 
 La gestion des volumes est un aspect fondamental de Docker, mais toutes les manières de les créer ne se valent pas.
 
@@ -111,7 +111,7 @@ Le volume `postgres-prod` est maintenant facile à identifier, à gérer et à m
 
 ---
 
-## 2.3 : Nettoyage et Gestion des Coûts
+## Nettoyage et Gestion des Coûts
 
 Un volume Docker, même s'il n'est plus rattaché à aucun conteneur, continue d'occuper de l'espace disque.
 
