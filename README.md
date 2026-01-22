@@ -82,3 +82,61 @@ Cette étape est cruciale pour éviter de laisser des conteneurs ou des volumes 
     ```bash
     docker volume rm shared-logs
     ```
+
+---
+
+## 2.2 : Volumes Nommés vs Anonymes
+
+La gestion des volumes est un aspect fondamental de Docker, mais toutes les manières de les créer ne se valent pas.
+
+Lorsqu'on utilise le flag `-v` sans spécifier de nom source, Docker crée un **volume anonyme**. Son nom est un long hash illisible, ce qui le rend très difficile à gérer par la suite.
+
+❌ **La mauvaise pratique : le volume anonyme**
+```bash
+docker run -d -v /var/lib/postgresql/data postgres:15
+```
+En inspectant les volumes (`docker volume ls`), vous verrez quelque chose comme `a7f8d9e2c4b...` créé pour ce conteneur. Comment le retrouver pour une sauvegarde ? C'est quasiment impossible.
+
+✅ **La bonne pratique : le volume nommé**
+C'est la méthode recommandée en production et en développement. On donne un nom explicite et lisible.
+```bash
+docker run -d -v postgres-prod:/var/lib/postgresql/data postgres:15
+```
+Le volume `postgres-prod` est maintenant facile à identifier, à gérer et à manipuler.
+
+**Avantages des volumes nommés :**
+- **Identification facile :** Vous savez exactement quel volume appartient à quel service.
+- **Sauvegardes simplifiées :** Il est trivial de cibler un volume nommé pour le sauvegarder.
+- **Migration aisée :** Déplacer ou recréer un conteneur en ré-attachant le même volume nommé est un jeu d'enfant.
+
+---
+
+## 2.3 : Nettoyage et Gestion des Coûts
+
+Un volume Docker, même s'il n'est plus rattaché à aucun conteneur, continue d'occuper de l'espace disque.
+
+⚠️ **L'anecdote qui fait réfléchir :**
+Uber a partagé une histoire où des milliers de **volumes orphelins** (dangling volumes) non nettoyés sur leurs serveurs de CI/CD leur ont coûté environ **50 000 $ par mois** en stockage cloud inutile avant qu'ils ne découvrent le problème.
+
+Un bon DevOps est un DevOps qui nettoie derrière lui.
+
+### Guide de Nettoyage Essentiel
+
+1.  **Identifier les volumes orphelins :**
+    Cette commande liste tous les volumes qui ne sont actuellement attachés à aucun conteneur.
+    ```bash
+    docker volume ls -f dangling=true
+    ```
+
+2.  **La commande magique de nettoyage :**
+    `docker volume prune` supprime **tous** les volumes orphelins en une seule fois. À utiliser avec prudence, mais extrêmement efficace.
+    ```bash
+    docker volume prune
+    ```
+    Docker vous demandera une confirmation avant de tout effacer.
+
+3.  **Supprimer un volume spécifique :**
+    Si vous avez besoin de supprimer un volume précis (nommé ou anonyme), utilisez `docker volume rm`.
+    ```bash
+    docker volume rm postgres-prod
+    ```
